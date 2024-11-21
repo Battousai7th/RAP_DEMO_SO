@@ -1,0 +1,120 @@
+@Metadata.layer: #CUSTOMER
+@UI.headerInfo: {
+    title.label: 'Order Item',
+    title.value: 'ItemLine',
+    description.value: 'ItemNote',
+    typeName: 'Order Item',
+    typeNamePlural: 'Order Items'
+}
+annotate view ZC_RAP_SO_I_PTM with
+{
+  @UI.facet: [{ type: #COLLECTION,
+                label: 'Order Item Information',
+                id: 'orderItemInfo' },
+                /* Item Infor */
+              { type: #FIELDGROUP_REFERENCE,
+                parentId: 'orderItemInfo',
+                label: 'Item Info',
+                position: 10,
+                targetQualifier: 'itemInfo' },
+                /* Item Detail */
+              { type: #COLLECTION,
+                label: 'Order Item Details',
+                id: 'orderItemDetails' },
+              { type: #FIELDGROUP_REFERENCE,
+                parentId: 'orderItemDetails',
+                label: 'Quantity',
+                position: 10,
+                targetQualifier: 'quantityInfo' },
+              { type: #FIELDGROUP_REFERENCE,
+                parentId: 'orderItemDetails',
+                label: 'Unit Price',
+                position: 20,
+                targetQualifier: 'unitPriceInfo' }]
+
+  @UI.lineItem: [{ type: #FOR_ACTION,
+                   dataAction: 'SetAdmitted',
+                   invocationGrouping: #CHANGE_SET,
+                   label: 'Set Admitted' }]
+  @UI.identification: [{ type: #FOR_ACTION,
+                         dataAction: 'SetAdmitted',
+                         label: 'Set Admitted' }]
+
+  @UI: {
+      lineItem: [{ position: 10 }],
+      fieldGroup: [{ qualifier: 'itemInfo',
+                     position: 10 }]
+        }
+  ItemLine;
+
+  @UI: {
+      lineItem: [{ position: 20 }],
+      fieldGroup: [{ qualifier: 'itemInfo',
+                     position: 20 }]
+        }
+  @Consumption.valueHelpDefinition: [ { entity: {name: 'ZI_RAP_VH_MATNR_PTM',
+                                                 element: 'Matnr' },
+                                        label: 'Material Number',
+                                        additionalBinding: [{ element: 'Quantity',
+                                                              localElement: 'Quantity',
+                                                              usage: #FILTER_AND_RESULT },
+                                                            { element: 'QuantityUnit',
+                                                              localElement: 'QuantityUnit',
+                                                              usage: #FILTER_AND_RESULT } ]
+                                     } ]        //Binding Value with another field
+  Product;
+
+  @UI: {
+      lineItem: [{ position: 30 }],
+      fieldGroup: [{ qualifier: 'itemInfo',
+                     position: 30 }]
+        }
+  ItemNote;
+
+  @UI: {
+      lineItem: [{ position: 80 }],
+      fieldGroup: [{ qualifier: 'quantityInfo',
+                     position: 10 }]
+        }
+  Quantity;
+  
+  @Consumption.valueHelpDefinition: [{
+        entity: {
+            name: 'I_UnitOfMeasure',
+            element: 'UnitOfMeasure'
+        },
+        useForValidation: true,
+        label: 'Select UoM from Dailog'
+    }]
+  QuantityUnit;
+
+  @UI: {
+      lineItem: [{ position: 100 }],
+      fieldGroup: [{ qualifier: 'unitPriceInfo',
+                     position: 10 }]
+        }
+  Price;
+
+  @Consumption.valueHelpDefinition: [{
+        entity: {
+            name: 'I_Currency',
+            element: 'Currency'
+        },
+        useForValidation: true,
+        label: 'Select currency from Dailog'
+    }]
+  CurrencyCode;
+
+  @UI.hidden: true
+  CreatedAt;
+
+  @UI.hidden: true
+  CreatedBy;
+
+  @UI.hidden: true
+  LastChangedBy;
+
+  @UI.hidden: true
+  LastChangedAt;
+
+}

@@ -1,0 +1,31 @@
+projection;
+use draft;          // Declare Draft
+//strict;           // Comment this line in to enable strict mode. The strict mode is prerequisite to be future proof regarding syntax and to be able to release your BO.
+
+define behavior for ZCR_RAP_SO_PTM alias SalesOrder
+{
+  use create;
+  use update;
+  use delete;
+
+  use association _SalesOrderItems { create; }
+
+  use action set_not_available as SetNotAvailable;          // Instance Action
+  use action issue_warning as IssueWarning;                 // Static Action
+
+  use action Activate;                                      // Enable Draf function
+  use action Discard;
+  use action Edit;
+  use action Resume;
+  use action Prepare;
+}
+
+define behavior for ZC_RAP_SO_I_PTM alias SalesOrderItems
+{
+  use update;
+  use delete;
+
+  use association _SalesOrder;
+
+  use action set_admitted as SetAdmitted;
+}

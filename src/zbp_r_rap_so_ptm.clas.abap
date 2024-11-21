@@ -1,0 +1,9 @@
+CLASS zbp_r_rap_so_ptm DEFINITION PUBLIC ABSTRACT FINAL FOR BEHAVIOR OF zr_rap_so_ptm.
+protected section.
+private section.
+ENDCLASS.
+
+
+
+CLASS ZBP_R_RAP_SO_PTM IMPLEMENTATION.
+ENDCLASS.

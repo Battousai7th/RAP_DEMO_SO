@@ -1,0 +1,122 @@
+managed implementation in class zbp_r_rap_so_ptm unique;
+with draft;                                                                             // Declare Draft
+//strict;
+
+define behavior for ZR_RAP_SO_PTM alias SalesOrder
+persistent table zdb_rap_so_ptm
+draft table zdb_rap_so_ptm_d                                                            // Create Draft table
+lock master
+total etag LastChangedAt
+//authorization master ( instance )
+etag master LocalLastChangedAt
+early numbering                                                                         // Early Numbering
+
+{
+  association _SalesOrderItems { create; }
+
+  field ( readonly )
+  SalesOrder,
+  SoldToParty;
+
+  field ( mandatory )
+  OrderDate;                                                                            // Show signal '*'
+
+  field ( features : instance ) TaxAmount;                                              // Field Control
+  create;
+  update ( features : instance );                                                       // Operation Control
+  delete ( features : instance );
+
+  //  action set_not_available result [1] $self;                                            // Instance Action
+  action ( features : instance ) set_not_available result [1] $self;                    // Action Control
+  static action issue_warning;                                                          // Static Action
+
+  validation validate_fields on save
+  { create; field
+    OrderDate,
+    TaxAmount,
+    Currency;
+  }                                                                                     // Validation for fields
+
+  determination set_value_soldtoparty on modify { create; }                             // Determination for fields, automaticaly generate when using Draft
+
+  draft action Activate optimized;                                                      // Activate function for Draft
+  draft action Discard;
+  draft action Edit;
+  draft action Resume;
+  draft determine action Prepare
+  {
+    validation validate_fields;                                                         // Enable Validation when using Draft
+  }
+
+  mapping for zdb_rap_so_ptm corresponding
+  {
+    SalesOrder = so_nr;
+    OrderDate = so_date;
+    Note = note;
+    SoldToParty = sold_to_party;
+    NotAvailable = not_available;
+    Currency = currency;
+    TaxAmount = tax_amount;
+    LifecycleStatus = lifecycle_status;
+    BillingStatus = billing_status;
+    DeliveryStatus = delivery_status;
+    PaymentMethod = payment_method;
+    PaymentTerm = payment_term;
+    CreatedAt = created_at;
+    CreatedBy = created_by;
+    LastChangedAt = last_changed_at;
+    LastChangedBy = last_changed_by;
+    LocalLastChangedAt = local_last_changed_at;
+  }
+}
+
+define behavior for ZI_RAP_SO_I_PTM alias SalesOrderItems
+persistent table zdb_rap_so_i_ptm
+draft table zdb_rap_it_ptm_d
+lock dependent by _SalesOrder
+etag master LocalLastChangedAt
+//authorization dependent by _SalesOrder
+//etag dependent by <field_name>            "Can not duplicate LastChangedAt field with Root
+
+{
+  association _SalesOrder;
+
+  field ( readonly )
+  SalesOrder;
+
+  field ( readonly : update )
+  ItemLine;
+
+  field ( mandatory )
+  Product;
+
+  field ( features : instance )
+  ItemNote;
+
+  update;
+  delete ( features : instance );
+
+  action ( features : instance ) set_admitted result [1] $self;
+
+  validation valid_Product on save
+  { create; update; field
+    Product; }
+
+  mapping for zdb_rap_so_i_ptm corresponding
+  {
+    SalesOrder = so_nr;
+    ItemLine = so_it_pos;
+    ItemNote = it_note;
+    Product = product_id;
+    Quantity = quantity;
+    QuantityUnit = quantity_unit;
+    Price = price;
+    CurrencyCode = currency_code;
+    DraftUuid = draft_uuid;
+    CreatedAt = created_at;
+    CreatedBy = created_by;
+    LastChangedAt = last_changed_at;
+    LastChangedBy = last_changed_by;
+    LocalLastChangedAt = local_last_changed_at;
+  }
+}

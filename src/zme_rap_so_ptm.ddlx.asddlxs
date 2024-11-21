@@ -1,0 +1,187 @@
+@Metadata.layer: #CUSTOMER
+@Search.searchable: true                    //Apply Value help
+@UI.headerInfo: {
+    title.label: 'Sales Order List',        //Label App
+    title.value: 'SalesOrder',
+    description.value: 'Note',
+    typeName: 'Sales Order',                //Label Object Page
+    typeNamePlural: 'Sales Orders'          //Label List Report and count Items
+}
+@UI.presentationVariant: [{                 //Sort Field
+        sortOrder: [{
+            by: 'TaxAmount',
+            direction: #DESC }],
+        visualizations: [{
+            type: #AS_LINEITEM }]
+}]
+
+annotate view ZCR_RAP_SO_PTM with
+{
+  /* Basic Information */
+  @UI.facet: [{ type: #COLLECTION,
+                label: 'General',
+                id: 'general' },
+              { type: #FIELDGROUP_REFERENCE,
+                parentId: 'general',
+                label: 'Basic Information',
+                targetQualifier: 'basicInfo' },
+              { type: #FIELDGROUP_REFERENCE,
+                parentId: 'general',
+                label: 'Statuses',
+                targetQualifier: 'statuses' },
+                /* Payment Information */
+              { type: #COLLECTION,
+                id: 'payment',
+                label: 'Payment' },
+              { type: #FIELDGROUP_REFERENCE,
+                parentId: 'payment',
+                label: 'Payment Information',
+                targetQualifier: 'paymentInfo' },
+              { type: #FIELDGROUP_REFERENCE,
+                parentId: 'payment',
+                label: 'Action Information',
+                targetQualifier: 'ActionInfo' },
+                /* Item Lists */
+              { type: #COLLECTION,
+                id: 'itemList',
+                label: 'Items' },
+              { type: #LINEITEM_REFERENCE,
+                parentId: 'itemList',
+                label: 'Item Lists',
+                targetElement: '_SalesOrderItems' }]
+
+  @UI.lineItem: [{ type: #FOR_ACTION,
+                   dataAction: 'SetNotAvailable',            //Instance Action: show tai man hinh List Report
+                   invocationGrouping: #CHANGE_SET,          //Edit to Multiple Records
+                   label: 'Set Not Available' },
+                 { type: #FOR_ACTION,
+                   dataAction: 'IssueWarning',
+                   label: 'Issue Warning' }  ]             //Static Action
+  @UI.identification: [{ type: #FOR_ACTION,
+                         dataAction: 'SetNotAvailable',      //Instance Action: show tai man hinh Object Page
+                         label: 'Set Not Available' }]
+
+  DeliveryStatusCriticality;
+
+  @UI: {
+      lineItem: [{ position: 10 }],
+      selectionField: [{ position: 10 }],
+      fieldGroup: [{ qualifier: 'basicInfo',
+                     position: 10 }]
+        }
+  SalesOrder;
+
+  @UI: {
+      lineItem: [{ position: 20 }],
+      selectionField: [{ position: 20 }],
+      fieldGroup: [{ qualifier: 'basicInfo',
+                     position: 20 }]
+        }
+  OrderDate;
+
+  @UI: {
+      lineItem: [{ position: 30 }],
+      selectionField: [{ position: 30 }],
+      fieldGroup: [{ qualifier: 'basicInfo',
+                     position: 30 }]
+        }
+  SoldToParty;
+
+  @UI: {
+      lineItem: [{ position: 40 }],
+      selectionField: [{ position: 40 }],
+      fieldGroup: [{ qualifier: 'basicInfo',
+                     position: 40 }]
+        }
+  @Consumption.valueHelpDefinition: [{
+        entity: {
+            name: 'I_Currency',
+            element: 'Currency'
+        },
+        useForValidation: true,
+        label: 'Select currency from Dailog'
+    }]
+  Currency;
+
+  @UI: {
+      fieldGroup: [{ qualifier: 'basicInfo',
+                     position: 50 }],
+      multiLineText: true
+        }
+  Note;
+
+  @UI: {
+      lineItem: [{ position: 50 }],
+      fieldGroup: [{ qualifier: 'statuses',
+                     position: 10 }],
+      multiLineText: true
+        }
+  LifecycleStatus;
+
+  @UI: {
+      lineItem: [{ position: 60 }],
+      fieldGroup: [{ qualifier: 'statuses',
+                     position: 20 }]
+        }
+  BillingStatus;
+
+  @UI: {
+      lineItem: [{ position: 70,
+                   criticality: 'DeliveryStatusCriticality' }],                 //Color of DeliveryStatus field
+      selectionField: [{ position: 45 }],
+      fieldGroup: [{ qualifier: 'statuses',
+                     position: 30 }]
+        }
+  @Search.defaultSearchElement: true
+  @Consumption.valueHelpDefinition: [ { entity: {name: 'ZI_RAP_VH_STATV_PTM',
+                                                 element: 'Value' },
+                                        label: 'Delivery Status 1' },
+                                      { entity: {name: 'ZI_RAP_VH_STATV_PTM01',
+                                                 element: 'Value' },
+                                        label: 'Delivery Status 2',
+                                        qualifier: 'VH_STATV_PTM01' } ]          //Add Value Help, Collective search help
+  DeliveryStatus;
+
+  @UI: {
+      lineItem: [{ position: 80 }],
+      selectionField: [{ position: 50 }],
+      fieldGroup: [{ qualifier: 'paymentInfo',
+                     position: 10 }]
+        }
+  PaymentMethod;
+
+  @UI: {
+      lineItem: [{ position: 90 }],
+      fieldGroup: [{ qualifier: 'paymentInfo',
+                     position: 20 }],
+      textArrangement: #TEXT_LAST
+        }
+  PaymentTerm;
+
+  @UI: {
+      lineItem: [{ position: 100 }],
+      fieldGroup: [{ qualifier: 'paymentInfo',
+                     position: 30 }]
+        }
+  TaxAmount;
+
+  @UI.hidden: true
+  CreatedAt;
+
+  @UI.hidden: true
+  CreatedBy;
+
+  @UI.hidden: true
+  LastChangedBy;
+
+  @UI.hidden: true
+  LastChangedAt;
+
+  @UI: {
+      lineItem: [{ position: 110 }],
+      fieldGroup: [{ qualifier: 'ActionInfo',
+                     position: 10 }]
+        }
+  NotAvailable;
+
+}
